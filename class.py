@@ -137,3 +137,84 @@ class SL_processor:
         summary = melted.groupby(['month', 'Brand ID', 'Movement_Reference_by_type'])['cost'].sum().reset_index()
         return summary
 
+class System_GL_processor:
+    def __init__(self, df, inditex_only=False, *months):
+        pd.set_option("display.float_format", "{:,.2f}".format)
+        self.df = df.copy()
+        self.inditex_only = inditex_only
+        self.months_filter = list(months) if months else None
+        self.process_df()
+
+    def extract_segment(self, account, index):
+        try:
+            return account.split("-")[index]
+        except Exception:
+            return None
+
+    def generate_columns(self, df):
+        # Extract Trancode, Storecode, and Movement
+        df[['Trancode', 'Storecode', 'Movement']] = df['JRNL_LINE_DESC'].str.extract(r'(\d+)_([\d]+)_(.*)')
+        df['Movement'] = df['Movement'].str.replace('not_present', '0', regex=False)
+        #df['Movement'] = df['Movement'].str.replace('-', '0-', regex=False)
+        df['Movement_Reference_by_type'] = df['Movement']
+        return df
+
+    def process_df(self):
+        self.df = self.df.fillna(0)
+
+        # Compute net value
+        self.df["net"] = pd.to_numeric(self.df["ACCOUNTED_DR"], errors="coerce") - pd.to_numeric(self.df["ACCOUNTED_CR"], errors="coerce")
+
+        # Extract segments from ACCOUNT
+        self.df["BrandId"] = self.df["ACCOUNT"].apply(lambda x: self.extract_segment(x, 2))
+        self.df["Segment_5"] = self.df["ACCOUNT"].apply(lambda x: self.extract_segment(x, 4))
+
+        # Parse JRNL_LINE_DESC
+        self.df = self.generate_columns(self.df)
+
+        # Extract month from date
+        self.df["ACCOUNTING_DATE"] = pd.to_datetime(self.df["ACCOUNTING_DATE"], errors="coerce")
+        self.df["month"] = self.df["ACCOUNTING_DATE"].dt.strftime("%b-%y")
+
+        # Filter by brand if requested
+        if self.inditex_only:
+            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT"])]
+
+        # Filter by specified months if provided
+        if self.months_filter:
+            self.df = self.df[self.df["month"].isin(self.months_filter)]
+
+    # --- Summaries ---
+    def GL_summary(self):
+        return self.df[["Segment_5", "net"]].groupby("Segment_5").sum().reset_index()
+
+    def Mov_summary(self):
+        df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        summary = df_filtered.groupby("Movement_Reference_by_type")["net"].sum().reset_index()
+        return summary[summary["net"] != 0]
+
+    def Brand_summary(self):
+        df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        return df_filtered.groupby("BrandId")["net"].sum().reset_index()
+
+    def Mov_summary_by_month(self):
+        df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        summary = df_filtered.groupby(["month", "Movement_Reference_by_type"])["net"].sum().reset_index()
+        return summary[summary["net"] != 0]
+
+    def Brand_summary_by_month(self):
+        df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        summary = df_filtered.groupby(["month", "BrandId"])["net"].sum().reset_index()
+        return summary[summary["net"] != 0]
+
+    def Mov_summary_by_month_by_brand(self):
+        df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        summary = df_filtered.groupby(["month", "BrandId", "Movement_Reference_by_type"])["net"].sum().reset_index()
+        return summary[summary["net"] != 0]
+    def GL_summary_by_month(self):
+        #df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        df_filtered = self.df
+        summary = df_filtered.groupby(["month", "Segment_5"])["net"].sum().reset_index()
+        return summary[summary["net"] != 0]
+
+
