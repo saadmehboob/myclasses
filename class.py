@@ -80,7 +80,7 @@ class SL_processor:
         self.df = df
         self.inditex_only = inditex_only
         self.months_filter = list(months) if months else None
-        self.process_df()
+        
         self.brand_map = {
             'BRK': 'Bershka',
             'DCT': 'Decathlon',
@@ -93,6 +93,7 @@ class SL_processor:
             'ZAR': 'Zara',
             'ZAH': 'Zara Home'
         }
+        self.process_df()
 
     def process_df(self):
         self.df.rename(columns={"Brand Name":"Brand ID"},inplace=True,errors='ignore')
