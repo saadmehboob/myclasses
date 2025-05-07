@@ -87,19 +87,17 @@ class SL_processor:
         self.months_filter = list(months) if months else None
         
         self.brand_map = {
-            'BRK': 'Bershka',
-            'DCT': 'Decathlon',
-            'LEF': 'Lefties',
-            'MNG': 'Mango',
-            'MSD': 'Massimo Dutti',
-            'OSH': 'Oysho',
-            'PNB': 'Pull And Bear',
-            'STR': 'Stradivarius',
-            'ZAR': 'Zara',
-            'ZAH': 'Zara Home'
+            'Bershka': 'BRK',
+            'Decathlon': 'DCT',
+            'Lefties': 'LEF',
+            'Mango': 'MNG',
+            'Massimo Dutti': 'MSD',
+            'Oysho': 'OSH',
+            'Pull And Bear': 'PNB',
+            'Stradivarius': 'STR',
+            'Zara': 'ZAR',
+            'Zara Home': 'ZAH'
         }
-        self.process_df()
-
     def process_df(self):
         self.df.rename(columns={"Brand Name":"Brand ID"},inplace=True,errors='ignore')
         self.df['Brand ID'] = self.df['Brand ID'].replace(self.brand_map)
