@@ -198,7 +198,7 @@ class System_GL_processor:
 
         # Filter by brand if requested
         if self.inditex_only:
-            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT",""Mango",'Decathlon'])]
+            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT","Mango",'Decathlon'])]
 
         # Filter by specified months if provided
         if self.months_filter:
