@@ -72,7 +72,7 @@ class DL_GL_processor:
         )
         return summary
     def GL_summary_by_month(self):
-        df_filtered = self.df[self.df['Segment_5'].astype(str).str.startswith("23")]
+        df_filtered = self.df
         summary = df_filtered.groupby(['month', 'Segment_5'])['net'].sum().reset_index()
         summary = summary[summary['net'] != 0]
         return summary
@@ -232,7 +232,7 @@ class System_GL_processor:
         summary = df_filtered.groupby(["month", "BrandId", "Movement_Reference_by_type"])["net"].sum().reset_index()
         return summary[summary["net"] != 0]
     def GL_summary_by_month(self):
-        #df_filtered = self.df[self.df["Segment_5"].astype(str).str.startswith("23")]
+        #df_filtered = self.df
         df_filtered = self.df
         summary = df_filtered.groupby(["month", "Segment_5"])["net"].sum().reset_index()
         return summary[summary["net"] != 0]
