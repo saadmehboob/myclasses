@@ -18,7 +18,7 @@ class DL_GL_processor:
         )
 
         if self.inditex_only:
-            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT"])]
+            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT", "Mango",'Decathlon'])]
 
         self.df['Effective_Date_Of_Transaction'] = pd.to_datetime(
             self.df['Effective_Date_Of_Transaction'], errors='coerce'
@@ -109,7 +109,7 @@ class SL_processor:
         self.df['Store ID'] = self.df['Store ID'].astype(str)
 
         if self.inditex_only:
-            self.df = self.df[~self.df["Brand ID"].isin(['MNG', 'DCT'])]
+            self.df = self.df[~self.df["Brand ID"].isin(['MNG', 'DCT',"Mango",'Decathlon'])]
 
         if self.months_filter:
             self.df = self.df[self.df['month'].isin(self.months_filter)]
@@ -198,7 +198,7 @@ class System_GL_processor:
 
         # Filter by brand if requested
         if self.inditex_only:
-            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT"])]
+            self.df = self.df[~self.df["BrandId"].isin(["MNG", "DCT",""Mango",'Decathlon'])]
 
         # Filter by specified months if provided
         if self.months_filter:
