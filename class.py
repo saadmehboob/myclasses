@@ -83,6 +83,7 @@ class SL_processor:
         self.process_df()
 
     def process_df(self):
+        self.df.rename(columns={"Brand Name":"Brand ID"},inplace=True,errors='ignore')
         self.df.drop(['Opening Cost', 'Total Movement Cost', 'Closing Cost'], axis=1, inplace=True, errors='ignore')
         self.df['Transaction Date'] = pd.to_datetime(self.df['Transaction Date'], errors='coerce')
         self.df['month'] = self.df['Transaction Date'].dt.strftime('%b-%y')
