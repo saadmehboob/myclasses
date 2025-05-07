@@ -71,6 +71,11 @@ class DL_GL_processor:
             "not_present", "0", regex=True
         )
         return summary
+    def GL_summary_by_month(self):
+        df_filtered = self.df[self.df['Segment_5'].astype(str).str.startswith("23")]
+        summary = df_filtered.groupby(['month', 'Segment_5'])['net'].sum().reset_index()
+        summary = summary[summary['net'] != 0]
+        return summary
 
 import pandas as pd
 
