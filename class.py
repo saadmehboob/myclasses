@@ -98,6 +98,7 @@ class SL_processor:
             'Zara': 'ZAR',
             'Zara Home': 'ZAH'
         }
+        self.process_df()
     def process_df(self):
         self.df = self.df.iloc[:-1,:]
         self.df.rename(columns={"Brand Name":"Brand ID"},inplace=True,errors='ignore')
