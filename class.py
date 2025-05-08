@@ -99,6 +99,7 @@ class SL_processor:
             'Zara Home': 'ZAH'
         }
     def process_df(self):
+        self.df = self.df.iloc[:-1,:]
         self.df.rename(columns={"Brand Name":"Brand ID"},inplace=True,errors='ignore')
         self.df['Brand ID'] = self.df['Brand ID'].replace(self.brand_map)
         self.df.drop(['Opening Cost', 'Total Movement Cost', 'Closing Cost'], axis=1, inplace=True, errors='ignore')
